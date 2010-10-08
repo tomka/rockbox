@@ -30,8 +30,6 @@
  #define COLORLINKS
 #endif
 
-PLUGIN_HEADER
-
 /* keymappings */
 
 #if (CONFIG_KEYPAD == IPOD_4G_PAD)
@@ -1921,8 +1919,6 @@ static bool check_dir(char *folder)
 
 enum plugin_status plugin_start(const void* file)
 {
-    PLUGINLIB_EXIT_INIT;
-
     rb->backlight_set_timeout(0);  /*Turn off backlight timeout*/
     check_dir("/wiki");
     if (!file)
