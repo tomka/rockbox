@@ -288,15 +288,13 @@ static char last_line[256]; /* the current line of text to be recorded */
 static int end_of_file=0;   /*flag for end of file in recording*/
 static int record_linebreak=0; /*flag for line break in recorded line*/
 
-static void viewer_exit(void *parameter);
 static struct linestate render(struct linestate cur, int norender,
                                int linktonote);
 static void readlink(struct linestate cur, int link, char * namebuf,
                      int buflen);
 
-static void viewer_exit(void *parameter)
+static void viewer_exit(void)
 {
-    (void)parameter;
 }
 
 static void set_article_offset(int32_t off);
@@ -1458,9 +1456,7 @@ loadnewarticle:
     {
         button = rb->button_get(true);
 
-        if (rb->default_event_handler_ex(button, viewer_exit, NULL)==
-            SYS_USB_CONNECTED)
-            return PLUGIN_USB_CONNECTED;
+        exit_on_usb(button);
 
 #ifdef HAVE_TOUCHSCREEN
         if (button & BUTTON_TOUCHSCREEN)
@@ -1919,6 +1915,8 @@ static bool check_dir(char *folder)
 
 enum plugin_status plugin_start(const void* file)
 {
+    atexit(viewer_exit);
+
     rb->backlight_set_timeout(0);  /*Turn off backlight timeout*/
     check_dir("/wiki");
     if (!file)
@@ -1932,7 +1930,6 @@ enum plugin_status plugin_start(const void* file)
     if (!viewer_init())
         return PLUGIN_ERROR;
 
-    viewer_exit(NULL);
     rb->backlight_set_timeout(rb->global_settings->backlight_timeout);
     /*Turn on backlight timeout*/
     return PLUGIN_OK;
